@@ -5,41 +5,58 @@ using UnityEngine;
 public class hero : MonoBehaviour
 {
  
-    Rigidbody2D rb_char;
-    public float movementSpeed,jump,maxspeed;
+    Rigidbody2D rbChar;
+    public float movementSpeed,jumpPower,maxSpeed;
     Animator animate;
     public bool onFloor;
+    public int  maxHealth;
+    private int health;
     void Start()
     {
         animate = GetComponent<Animator>();
-        rb_char = GetComponent<Rigidbody2D>();
-        
+        rbChar = GetComponent<Rigidbody2D>();
+        health = maxHealth;
     }
     void FixedUpdate()
     {
         float h = Input.GetAxis("Horizontal");
-        rb_char.AddForce(Vector3.right * h * movementSpeed);
+        
         animate.SetBool("onfloor",onFloor);
         animate.SetFloat("speed",Mathf.Abs(h));
         if (h>0)
         {
             transform.localScale = new Vector2(-1, 1);
+            transform.Translate(h*movementSpeed*Time.deltaTime,0,0);
+            
         }
         if (h<0)
         {
             transform.localScale = new Vector2(1,1);
+            transform.Translate(h * movementSpeed * Time.deltaTime, 0, 0);
         }
-        if (rb_char.velocity.x>maxspeed)
+        if (rbChar.velocity.x>maxSpeed)
         {
-            rb_char.velocity = new Vector2(maxspeed,rb_char.velocity.y);
+            rbChar.velocity = new Vector2(maxSpeed, rbChar.velocity.y);
         }
-        if (rb_char.velocity.x < -maxspeed)
+        if (rbChar.velocity.x < -maxSpeed)
         {
-            rb_char.velocity = new Vector2(-maxspeed, rb_char.velocity.y);
+            rbChar.velocity = new Vector2(-maxSpeed, rbChar.velocity.y);
         }
     }
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space)&&onFloor)
+        {
+            rbChar.AddForce(Vector2.up*jumpPower);
+        }
+        if (health<0)
+        {
+            death();
+        }
+    }
+    void death()
+    {
+        Application.LoadLevel(Application.loadedLevel);
 
     }
 }
