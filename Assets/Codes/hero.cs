@@ -11,11 +11,13 @@ public class hero : MonoBehaviour
     public bool onFloor;
     public int  maxHealth;
     private int health;
+    public GameObject[] healthBar;
     void Start()
     {
         animate = GetComponent<Animator>();
         rbChar = GetComponent<Rigidbody2D>();
         health = maxHealth;
+
     }
     void FixedUpdate()
     {
@@ -57,6 +59,32 @@ public class hero : MonoBehaviour
     void death()
     {
         Application.LoadLevel(Application.loadedLevel);
+    }
+    void healthSystem()
+    {
+        for (int i = 0; i < maxHealth; i++)
+        {
+            healthBar[i].SetActive(false);
+        }
+        for (int i = 0; i < health; i++)
+        {
+            healthBar[i].SetActive(true);
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D obj)
+    {
+        if (obj.gameObject.tag == "trap")
+        {
+            health -= 1;
+            rbChar.AddForce(Vector2.up * jumpPower);
+            healthSystem();
+            GetComponent<SpriteRenderer>().color = Color.cyan;
+            Invoke("restoreColor", 0.5F);
+        }
+    }
+    void restoreColor()
+    {
+        GetComponent<SpriteRenderer>().color = Color.white;
 
     }
 }
